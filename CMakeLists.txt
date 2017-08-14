@@ -18,6 +18,7 @@ include(StandaloneBuild)
 include(PlatformDetect)
 include(AddBoostLib)
 include(AddBoostTest)
+include(ExportLibraries)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS TRUE)
 
@@ -25,6 +26,13 @@ if(USE_ANDROID)
   # CMake 3.7.1 doesn't define the target triple for the ASM language,
   # resulting in all files compiled for the host architecture
   set(CMAKE_ASM_COMPILER_TARGET "${CMAKE_CXX_COMPILER_TARGET}")
+endif()
+
+# Give libraries a "-debug" prefix when debug configuration is in use.
+# This allows side-by-side installation of debug and release libs,
+# which is mostly useful on Windows.
+if(NOT CMAKE_DEBUG_POSTFIX)
+    set(CMAKE_DEBUG_POSTFIX -debug)
 endif()
 
 set(BOOST_LIBS_REQUIRED
@@ -77,14 +85,16 @@ endforeach()
 # TODO: Move those to option() calls in the right file
 if(NOT BOOST_STANDALONE)
   # Compilation options required by all platforms
-  set_property(TARGET Boost::boost APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS $<$<CONFIG:Release>:BOOST_DISABLE_ASSERT>)
-  set_property(TARGET Boost::boost APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS BOOST_SYSTEM_NO_DEPRECATED)
-  set_property(TARGET Boost::boost APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS BOOST_THREAD_VERSION=4)
-  set_property(TARGET Boost::boost APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS BOOST_THREAD_USES_CHRONO)
-  set_property(TARGET Boost::boost APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS BOOST_THREAD_PROVIDES_EXECUTORS)
+  set_property(TARGET Boost_boost APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS $<$<CONFIG:Release>:BOOST_DISABLE_ASSERT>)
+  set_property(TARGET Boost_boost APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS BOOST_SYSTEM_NO_DEPRECATED)
+  set_property(TARGET Boost_boost APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS BOOST_THREAD_VERSION=4)
+  set_property(TARGET Boost_boost APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS BOOST_THREAD_USES_CHRONO)
+  set_property(TARGET Boost_boost APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS BOOST_THREAD_PROVIDES_EXECUTORS)
 endif()
 
 if(USE_ANDROID)
   # Android doesn't support thread local storage through compiler intrinsics
-  set_property(TARGET Boost::boost APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS BOOST_ASIO_DISABLE_THREAD_KEYWORD_EXTENSION)
+  set_property(TARGET Boost_boost APPEND PROPERTY INTERFACE_COMPILE_DEFINITIONS BOOST_ASIO_DISABLE_THREAD_KEYWORD_EXTENSION)
 endif()
+
+_export_libraries()

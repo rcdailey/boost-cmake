@@ -1,0 +1,28 @@
+set(_target_script_name "@BOOST_EXPORT_NAME@")
+set(_boost_deps @BOOST_FIND_PACKAGE@)
+
+foreach(dep ${_boost_deps})
+  find_package(${dep} QUIET)
+  if(${dep}_FOUND)
+    list(APPEND _boost_deps_found ${dep})
+  else()
+    list(APPEND _boost_deps_missing ${dep})
+  endif()
+endforeach()
+
+message(STATUS "Boost dependencies found: ${_boost_deps_found}")
+if(_boost_deps_missing)
+  message(STATUS "Boost dependencies missing: ${_boost_deps_missing}")
+endif()
+
+# TODO: Investigate failure logic. Should we fail if we can't find the above dependencies?
+# Sample code for reference:
+# set(Boost_FOUND False)
+# set(Boost_NOT_FOUND_MESSAGE "Unable to find boost component: ${comp}" )
+
+include(${CMAKE_CURRENT_LIST_DIR}/${_target_script_name}.cmake)
+
+unset(_boost_deps)
+unset(_boost_deps_found)
+unset(_boost_deps_missing)
+unset(_target_script_name)

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(Boost-CMake)
 
-option(BOOST_DOWNLOAD_TO_BINARY_DIR "Prefer downloading Boost to the binary directory instead of source directory" OFF)
+option(BOOST_DOWNLOAD_TO_BINARY_DIR "Prefer downloading Boost to the binary directory instead of source directory" ON)
 option(BOOST_DISABLE_TESTS "Do not build test targets, even if building standalone" OFF)
 
 set(BOOST_URL "https://github.com/Orphis/boost-cmake/releases/download/v1.64.0/boost_1_64_0.tar.xz" CACHE STRING "Boost download URL")
